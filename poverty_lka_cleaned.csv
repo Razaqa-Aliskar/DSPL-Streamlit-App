@@ -1,0 +1,160 @@
+Year,Indicator Name,Indicator Code,Value
+2019,Income share held by second 20%,SI.DST.02ND.20,11.1
+2016,Income share held by second 20%,SI.DST.02ND.20,10.8
+2012,Income share held by second 20%,SI.DST.02ND.20,11.0
+2009,Income share held by second 20%,SI.DST.02ND.20,11.6
+2006,Income share held by second 20%,SI.DST.02ND.20,10.7
+2002,Income share held by second 20%,SI.DST.02ND.20,10.5
+1995,Income share held by second 20%,SI.DST.02ND.20,11.7
+1990,Income share held by second 20%,SI.DST.02ND.20,12.5
+1985,Income share held by second 20%,SI.DST.02ND.20,12.4
+2019,Income share held by third 20%,SI.DST.03RD.20,15.0
+2016,Income share held by third 20%,SI.DST.03RD.20,14.6
+2012,Income share held by third 20%,SI.DST.03RD.20,14.6
+2009,Income share held by third 20%,SI.DST.03RD.20,15.3
+2006,Income share held by third 20%,SI.DST.03RD.20,14.4
+2002,Income share held by third 20%,SI.DST.03RD.20,14.2
+1995,Income share held by third 20%,SI.DST.03RD.20,15.2
+1990,Income share held by third 20%,SI.DST.03RD.20,16.0
+1985,Income share held by third 20%,SI.DST.03RD.20,16.4
+2019,Income share held by fourth 20%,SI.DST.04TH.20,20.8
+2016,Income share held by fourth 20%,SI.DST.04TH.20,20.3
+2012,Income share held by fourth 20%,SI.DST.04TH.20,20.5
+2009,Income share held by fourth 20%,SI.DST.04TH.20,21.0
+2006,Income share held by fourth 20%,SI.DST.04TH.20,20.5
+2002,Income share held by fourth 20%,SI.DST.04TH.20,20.4
+1995,Income share held by fourth 20%,SI.DST.04TH.20,21.1
+1990,Income share held by fourth 20%,SI.DST.04TH.20,21.0
+1985,Income share held by fourth 20%,SI.DST.04TH.20,21.8
+2019,Income share held by highest 20%,SI.DST.05TH.20,45.7
+2016,Income share held by highest 20%,SI.DST.05TH.20,47.2
+2012,Income share held by highest 20%,SI.DST.05TH.20,46.6
+2009,Income share held by highest 20%,SI.DST.05TH.20,44.4
+2006,Income share held by highest 20%,SI.DST.05TH.20,47.4
+2002,Income share held by highest 20%,SI.DST.05TH.20,48.0
+1995,Income share held by highest 20%,SI.DST.05TH.20,44.0
+1990,Income share held by highest 20%,SI.DST.05TH.20,41.7
+1985,Income share held by highest 20%,SI.DST.05TH.20,41.1
+2019,Income share held by highest 10%,SI.DST.10TH.10,30.8
+2016,Income share held by highest 10%,SI.DST.10TH.10,32.6
+2012,Income share held by highest 10%,SI.DST.10TH.10,31.9
+2009,Income share held by highest 10%,SI.DST.10TH.10,29.6
+2006,Income share held by highest 10%,SI.DST.10TH.10,32.3
+2002,Income share held by highest 10%,SI.DST.10TH.10,32.7
+1995,Income share held by highest 10%,SI.DST.10TH.10,29.0
+1990,Income share held by highest 10%,SI.DST.10TH.10,27.5
+1985,Income share held by highest 10%,SI.DST.10TH.10,26.4
+2019,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.5
+2016,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.7
+2012,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.1
+2009,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,7.8
+2006,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.2
+2002,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.4
+1995,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,6.9
+1990,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,5.9
+1985,Proportion of people living below 50 percent of median income (%),SI.DST.50MD,9.2
+2019,Income share held by lowest 10%,SI.DST.FRST.10,3.1
+2016,Income share held by lowest 10%,SI.DST.FRST.10,3.0
+2012,Income share held by lowest 10%,SI.DST.FRST.10,3.0
+2009,Income share held by lowest 10%,SI.DST.FRST.10,3.3
+2006,Income share held by lowest 10%,SI.DST.FRST.10,3.0
+2002,Income share held by lowest 10%,SI.DST.FRST.10,3.0
+1995,Income share held by lowest 10%,SI.DST.FRST.10,3.4
+1990,Income share held by lowest 10%,SI.DST.FRST.10,3.7
+1985,Income share held by lowest 10%,SI.DST.FRST.10,3.6
+2019,Income share held by lowest 20%,SI.DST.FRST.20,7.4
+2016,Income share held by lowest 20%,SI.DST.FRST.20,7.1
+2012,Income share held by lowest 20%,SI.DST.FRST.20,7.3
+2009,Income share held by lowest 20%,SI.DST.FRST.20,7.8
+2006,Income share held by lowest 20%,SI.DST.FRST.20,7.0
+2002,Income share held by lowest 20%,SI.DST.FRST.20,7.0
+1995,Income share held by lowest 20%,SI.DST.FRST.20,8.0
+1990,Income share held by lowest 20%,SI.DST.FRST.20,8.7
+1985,Income share held by lowest 20%,SI.DST.FRST.20,8.3
+2019,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,1.0
+2016,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,1.3
+2012,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,2.6
+2009,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,3.5
+2006,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,5.6
+2002,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,11.0
+1995,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,11.8
+1990,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,11.6
+1985,Poverty headcount ratio at $2.15 a day (2017 PPP) (% of population),SI.POV.DDAY,17.2
+2019,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,0.1
+2016,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,0.2
+2012,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,0.4
+2009,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,0.6
+2006,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,0.9
+2002,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,2.0
+1995,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,2.2
+1990,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,2.1
+1985,Poverty gap at $2.15 a day (2017 PPP) (%),SI.POV.GAPS,3.3
+2019,Gini index,SI.POV.GINI,37.7
+2016,Gini index,SI.POV.GINI,39.3
+2012,Gini index,SI.POV.GINI,38.7
+2009,Gini index,SI.POV.GINI,36.1
+2006,Gini index,SI.POV.GINI,39.7
+2002,Gini index,SI.POV.GINI,40.2
+1995,Gini index,SI.POV.GINI,35.4
+1990,Gini index,SI.POV.GINI,32.4
+1985,Gini index,SI.POV.GINI,32.5
+2019,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,11.3
+2016,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,13.8
+2012,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,19.7
+2009,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,23.8
+2006,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,29.8
+2002,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,42.2
+1995,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,47.6
+1990,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,49.9
+1985,Poverty headcount ratio at $3.65 a day (2017 PPP) (% of population),SI.POV.LMIC,51.8
+2019,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,2.1
+2016,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,2.7
+2012,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,4.4
+2009,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,5.4
+2006,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,7.5
+2002,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,12.2
+1995,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,13.6
+1990,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,13.9
+1985,Poverty gap at $3.65 a day (2017 PPP) (%),SI.POV.LMIC.GP,16.2
+2019,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,14.3
+2016,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,16.0
+2012,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,22.5
+2009,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,28.4
+2006,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,34.1
+2002,Poverty headcount ratio at national poverty lines (% of population),SI.POV.NAHC,46.8
+2019,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,49.3
+2016,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,52.8
+2012,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,61.5
+2009,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,67.4
+2006,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,69.4
+2002,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,76.8
+1995,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,82.5
+1990,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,87.2
+1985,Poverty headcount ratio at $6.85 a day (2017 PPP) (% of population),SI.POV.UMIC,87.6
+2019,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,15.6
+2016,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,17.4
+2012,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,22.3
+2009,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,25.5
+2006,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,28.7
+2002,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,35.8
+1995,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,39.4
+1990,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,41.8
+1985,Poverty gap at $6.85 a day (2017 PPP) (%),SI.POV.UMIC.GP,43.3
+2019,"Survey mean consumption or income per capita, bottom 40% of population (2017 PPP $ per day)",SI.SPR.PC40,4.28
+2016,"Survey mean consumption or income per capita, bottom 40% of population (2017 PPP $ per day)",SI.SPR.PC40,4.07
+2019,"Annualized average growth rate in per capita real survey mean consumption or income, bottom 40% of population (%)",SI.SPR.PC40.ZG,1.74
+2019,"Survey mean consumption or income per capita, total population (2017 PPP $ per day)",SI.SPR.PCAP,9.25
+2016,"Survey mean consumption or income per capita, total population (2017 PPP $ per day)",SI.SPR.PCAP,9.07
+2019,"Annualized average growth rate in per capita real survey mean consumption or income, total population (%)",SI.SPR.PCAP.ZG,0.65
+2019,Multidimensional poverty headcount ratio (% of total population),SI.POV.MDIM,16.0
+2016,Multidimensional poverty headcount ratio (% of total population),SI.POV.MDIM,2.37
+2019,"Multidimensional poverty headcount ratio, children (% of population ages 0-17)",SI.POV.MDIM.17,16.9
+2016,"Multidimensional poverty headcount ratio, children (% of population ages 0-17)",SI.POV.MDIM.17,2.63238
+2019,"Multidimensional poverty index, children (population ages 0-17) (scale 0-1)",SI.POV.MDIM.17.XQ,0.071
+2016,"Multidimensional poverty headcount ratio, female (% of female population)",SI.POV.MDIM.FE,2.47342
+2016,"Multidimensional poverty headcount ratio, household (% of total households)",SI.POV.MDIM.HH,2.97
+2019,Multidimensional poverty intensity (average share of deprivations experienced by the poor),SI.POV.MDIM.IT,41.6
+2016,Multidimensional poverty intensity (average share of deprivations experienced by the poor),SI.POV.MDIM.IT,37.51
+2016,"Multidimensional poverty headcount ratio, male (% of male population)",SI.POV.MDIM.MA,2.26367
+2019,Multidimensional poverty index (scale 0-1),SI.POV.MDIM.XQ,0.067
+2016,Multidimensional poverty index (scale 0-1),SI.POV.MDIM.XQ,0.0089
