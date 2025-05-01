@@ -1,132 +1,145 @@
+# poverty_full_dashboard.py
+
 import streamlit as st
 import pandas as pd
-st.write ("razaqaa")
+import plotly.express as px
+import plotly.graph_objects as go
 
+# --- Page Setup ---
+st.set_page_config(page_title="Sri Lanka Poverty Dashboard", layout="wide")
+
+# --- Load Data ---
 df = pd.read_csv('poverty_lka_cleaned.csv')
 
-import streamlit as st
-import pandas as pd
-import altair as alt
+# --- Sidebar Filters ---
+st.sidebar.header("Filters")
 
+years = st.sidebar.multiselect(
+    "Select Year(s):",
+    options=sorted(df['Year'].unique()),
+    default=sorted(df['Year'].unique())
+)
 
-# Assuming your data is in a CSV file named 'sri_lanka_data.csv'
-# Adjust the filename and path as needed.
-try:
-    df = pd.read_csv('poverty_lka_cleaned.csv')
-except FileNotFoundError:
-    st.error("Error: Could not find 'sri_lanka_data.csv'.  Please make sure it's in the same directory.")
-    st.stop()  # Halt execution if the data file is missing
+indicators = st.sidebar.multiselect(
+    "Select Indicator(s):",
+    options=df['Indicator Name'].unique(),
+    default=df['Indicator Name'].unique()
+)
 
+# Filtered Data
+filtered_df = df[(df['Year'].isin(years)) & (df['Indicator Name'].isin(indicators))]
 
-if 'Year' in df.columns:
-    try:
-        df['Year'] = pd.to_datetime(df['Year'], errors='coerce')
-        df.dropna(subset=['Year'], inplace=True)  # Remove rows with invalid years
-    except KeyError:
-        st.error("Error: 'Year' column not found in the dataset.")
-        st.stop()
+# --- Main Title ---
+st.title("📊 Sri Lanka Poverty Indicators Dashboard")
+st.markdown("Explore poverty trends, income inequality, and gaps over time for Sri Lanka.")
 
-# --- Streamlit App ---
-st.title("Sri Lanka Development Indicators Dashboard")
+# --- KPIs Section ---
+st.subheader("📌 Key Metrics")
 
-# --- 1. Income Inequality Section ---
-st.header("Income Inequality")
+col1, col2, col3 = st.columns(3)
 
-# Dropdown for Income Share Percentile (if applicable)
-income_share_cols = [col for col in df.columns if "Income share held by" in col]
-selected_income_share = None
-if income_share_cols:
-    selected_income_share = st.selectbox("Select Income Share Percentile", income_share_cols, index=0)  # Default to the first one
+# Latest Year Data
+latest_year = df['Year'].max()
+latest_data = df[df['Year'] == latest_year]
 
-# Line Chart for Income Share
-if selected_income_share:
-    income_share_chart = alt.Chart(df).mark_line().encode(
-        x=alt.X('Year', axis=alt.Axis(format="%Y")),  # Format Year on the axis
-        y=selected_income_share,
-        tooltip=['Year', selected_income_share]
-    ).properties(
-        title=f"Income Share Held by {selected_income_share}"
-    ).interactive()
-    st.altair_chart(income_share_chart, use_container_width=True)
+if not latest_data.empty:
+    poverty_headcount = latest_data[latest_data['Indicator Name'].str.contains("Poverty headcount", case=False)]
+    poverty_value = poverty_headcount['Value'].mean() if not poverty_headcount.empty else None
 
-# Line Chart for Gini Index
-if 'Gini index' in df.columns:
-    gini_chart = alt.Chart(df).mark_line().encode(
-        x=alt.X('Year', axis=alt.Axis(format="%Y")),
-        y='Gini index',
-        tooltip=['Year', 'Gini index']
-    ).properties(
-        title="Gini Index Over Time"
-    ).interactive()
-    st.altair_chart(gini_chart, use_container_width=True)
+    gap_data = latest_data[latest_data['Indicator Name'].str.contains("poverty gap", case=False)]
+    gap_value = gap_data['Value'].mean() if not gap_data.empty else None
 
+    inequality_data = latest_data[latest_data['Indicator Name'].str.contains("Income share held by lowest", case=False)]
+    inequality_value = inequality_data['Value'].mean() if not inequality_data.empty else None
 
-# --- 2. Poverty Section ---
-st.header("Poverty")
+    col1.metric(label=f"Poverty Headcount ({latest_year})", value=f"{poverty_value:.2f}%" if poverty_value else "N/A")
+    col2.metric(label=f"Poverty Gap ({latest_year})", value=f"{gap_value:.2f}%" if gap_value else "N/A")
+    col3.metric(label=f"Lowest 20% Income Share ({latest_year})", value=f"{inequality_value:.2f}%" if inequality_value else "N/A")
+else:
+    st.warning("No data available for the latest year.")
 
-# Dropdown for Poverty Line
-poverty_cols = [col for col in df.columns if "Poverty headcount ratio" in col]
-selected_poverty_line = None
-if poverty_cols:
-    selected_poverty_line = st.selectbox("Select Poverty Line", poverty_cols, index=0)
+# --- Trend Analysis Section ---
+st.subheader("📈 Trend of Poverty Indicators Over Time")
 
-# Line Chart for Poverty Ratio
-if selected_poverty_line:
-    poverty_chart = alt.Chart(df).mark_line().encode(
-        x=alt.X('Year', axis=alt.Axis(format="%Y")),
-        y=selected_poverty_line,
-        tooltip=['Year', selected_poverty_line]
-    ).properties(
-        title=f"Poverty Headcount Ratio at {selected_poverty_line}"
-    ).interactive()
-    st.altair_chart(poverty_chart, use_container_width=True)
+if not filtered_df.empty:
+    fig_trend = px.line(
+        filtered_df,
+        x="Year",
+        y="Value",
+        color="Indicator Name",
+        markers=True,
+        title="Trend of Selected Indicators",
+        color_discrete_sequence=px.colors.qualitative.Set2
+    )
+    st.plotly_chart(fig_trend, use_container_width=True)
+else:
+    st.warning("No data for the selected filters.")
 
+# --- Growth Rate Section ---
+st.subheader("📈 Year-on-Year Growth/Decline in Indicators")
 
-# --- 3. Women in Parliament Section ---
-st.header("Women in Parliament")
+growth_df = filtered_df.copy()
+growth_df['Value Shifted'] = growth_df.groupby('Indicator Name')['Value'].shift(1)
+growth_df['Growth Rate (%)'] = ((growth_df['Value'] - growth_df['Value Shifted']) / growth_df['Value Shifted']) * 100
 
-if 'Proportion of seats held by women in national parliaments' in df.columns:
-    women_parliament_chart = alt.Chart(df).mark_line().encode(
-        x=alt.X('Year', axis=alt.Axis(format="%Y")),
-        y='Proportion of seats held by women in national parliaments',
-        tooltip=['Year', 'Proportion of seats held by women in national parliaments']
-    ).properties(
-        title="Women's Representation in Parliament"
-    ).interactive()
-    st.altair_chart(women_parliament_chart, use_container_width=True)
+growth_df = growth_df.dropna()
 
+if not growth_df.empty:
+    fig_growth = px.bar(
+        growth_df,
+        x="Year",
+        y="Growth Rate (%)",
+        color="Indicator Name",
+        barmode="group",
+        title="Year-on-Year Growth Rate",
+        color_discrete_sequence=px.colors.qualitative.Pastel
+    )
+    st.plotly_chart(fig_growth, use_container_width=True)
+else:
+    st.info("Not enough data to compute growth rates.")
 
-# --- 4. Multidimensional Poverty Section ---
-st.header("Multidimensional Poverty")
+# --- Indicator Ranking (Latest Year) ---
+st.subheader(f"🏆 Indicator Ranking in {latest_year}")
 
-mpi_cols = [col for col in df.columns if "Multidimensional poverty index" in col]
-selected_mpi_indicator = None
-if mpi_cols:
-    selected_mpi_indicator = st.selectbox("Select MPI Indicator", mpi_cols, index=0)
+rank_df = df[df['Year'] == latest_year]
 
-if selected_mpi_indicator:
-    mpi_chart = alt.Chart(df).mark_line().encode(
-        x=alt.X('Year', axis=alt.Axis(format="%Y")),
-        y=selected_mpi_indicator,
-        tooltip=['Year', selected_mpi_indicator]
-    ).properties(
-        title=f"{selected_mpi_indicator} Over Time"
-    ).interactive()
-    st.altair_chart(mpi_chart, use_container_width=True)
+if not rank_df.empty:
+    fig_rank = px.bar(
+        rank_df.sort_values('Value', ascending=False),
+        x="Value",
+        y="Indicator Name",
+        orientation='h',
+        title=f"Ranking of Indicators ({latest_year})",
+        color="Value",
+        color_continuous_scale="Viridis"
+    )
+    st.plotly_chart(fig_rank, use_container_width=True)
+else:
+    st.warning("No ranking data available for the latest year.")
 
+# --- Correlation Analysis ---
+st.subheader("🔗 Correlation Between Indicators (Advanced)")
 
-# --- Add a Time Range Slider for Global Filtering ---
-if 'Year' in df.columns:
-    min_year = df['Year'].min().year
-    max_year = df['Year'].max().year
-    year_range = st.slider("Select Year Range", min_value=min_year, max_value=max_year, value=(min_year, max_year))
-    df = df[(df['Year'].dt.year >= year_range[0]) & (df['Year'].dt.year <= year_range[1])]
+pivot_df = df.pivot(index="Year", columns="Indicator Name", values="Value")
 
+if pivot_df.isnull().sum().sum() < 0.5 * pivot_df.size:  # Less than 50% missing
+    corr_matrix = pivot_df.corr()
 
-# ---  Key Insights Text  ---
-st.header("Key Insights")
-st.write("This dashboard provides an overview of key development indicators for Sri Lanka...") #Add your insights here.
+    fig_corr = px.imshow(
+        corr_matrix,
+        text_auto=True,
+        color_continuous_scale="Tealrose",
+        title="Correlation Between Indicators"
+    )
+    st.plotly_chart(fig_corr, use_container_width=True)
+else:
+    st.info("Too much missing data for correlation matrix.")
 
-# ---  Footer  ---
-st.sidebar.header("About")
-st.sidebar.info("This Streamlit app visualizes Sri Lankan development indicators.  Data source: [Your Data Source(s) Here]") # Replace with your actual data source(s)
+# --- Data View Section ---
+st.subheader("📄 Explore Filtered Dataset")
+st.dataframe(filtered_df)
+
+# Footer
+st.markdown("---")
+st.markdown("Developed by [Razaqa Aliskar] | Module: 5DATA004W | 📅 2025")
+
