@@ -8,7 +8,7 @@ import streamlit as st
 import pandas as pd
 import altair as alt
 
-# --- Load Your Data ---
+
 # Assuming your data is in a CSV file named 'sri_lanka_data.csv'
 # Adjust the filename and path as needed.
 try:
@@ -17,10 +17,7 @@ except FileNotFoundError:
     st.error("Error: Could not find 'sri_lanka_data.csv'.  Please make sure it's in the same directory.")
     st.stop()  # Halt execution if the data file is missing
 
-# --- Data Preprocessing ---
-# Clean and transform your data here if necessary.
-# This is crucial to ensure it's in the right format for plotting.
-# Example: Convert 'Year' to datetime if needed
+
 if 'Year' in df.columns:
     try:
         df['Year'] = pd.to_datetime(df['Year'], errors='coerce')
