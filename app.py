@@ -1,5 +1,3 @@
-# poverty_full_dashboard.py
-
 import streamlit as st
 import pandas as pd
 import plotly.express as px
@@ -14,10 +12,15 @@ df = pd.read_csv('poverty_lka_cleaned.csv')
 # --- Sidebar Filters ---
 st.sidebar.header("Filters")
 
-years = st.sidebar.multiselect(
-    "Select Year(s):",
-    options=sorted(df['Year'].unique()),
-    default=sorted(df['Year'].unique())
+# Replace the multiselect for Year with a range slider
+min_year = df['Year'].min()
+max_year = df['Year'].max()
+
+year_range = st.sidebar.slider(
+    "Select Year Range:",
+    min_value=min_year,
+    max_value=max_year,
+    value=(min_year, max_year)
 )
 
 indicators = st.sidebar.multiselect(
@@ -27,7 +30,7 @@ indicators = st.sidebar.multiselect(
 )
 
 # Filtered Data
-filtered_df = df[(df['Year'].isin(years)) & (df['Indicator Name'].isin(indicators))]
+filtered_df = df[(df['Year'] >= year_range[0]) & (df['Year'] <= year_range[1]) & (df['Indicator Name'].isin(indicators))]
 
 # --- Main Title ---
 st.title("📊 Sri Lanka Poverty Indicators Dashboard")
@@ -142,4 +145,3 @@ st.dataframe(filtered_df)
 # Footer
 st.markdown("---")
 st.markdown("Developed by [Razaqa Aliskar] | Module: 5DATA004W | 📅 2025")
-
