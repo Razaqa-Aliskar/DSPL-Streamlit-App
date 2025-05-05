@@ -2,74 +2,151 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import time
+import matplotlib.pyplot as plt
+import seaborn as sns
 
 # --- Page Setup ---
 st.set_page_config(page_title="Sri Lanka Poverty Dashboard", layout="wide")
 
-# --- Custom CSS for Background and Styling ---
-page_bg_img = '''
-<style>
-.stApp {
-background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)),
-url("https://images.unsplash.com/photo-1601764762628-4d33e2f13251");
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-background-attachment: fixed;
-color: white;
-}
-</style>
-'''
-st.markdown(page_bg_img, unsafe_allow_html=True)
-
 # --- Load Data ---
 @st.cache_data
 def load_data():
-    time.sleep(1)  # To show spinner effect
+    time.sleep(1)
     return pd.read_csv('poverty_lka_cleaned.csv')
 
 with st.spinner('Loading data...'):
     df = load_data()
 
-# --- Title ---
+# --- Sidebar ---
+with st.sidebar:
+    st.image('https://www.shutterstock.com/image-vector/vector-obverse-high-polygonal-pixel-600nw-2456917051.jpg', width=200)
+    st.title("🌏 Dashboard Settings")
+
+    # Theme Toggle
+    theme = st.radio("Select Theme:", ['Light', 'Dark'], horizontal=True)
+
+    st.markdown("---")
+
+    # Year Filter ONLY
+    min_year = int(df['Year'].min())
+    max_year = int(df['Year'].max())
+
+    year_range = st.slider(
+        "Select Year Range:",
+        min_value=min_year,
+        max_value=max_year,
+        value=(min_year, max_year)
+    )
+
+# --- Update Theme ---
+# --- Update Theme ---
+if theme == "Dark":
+    st.markdown(
+        """
+        <style>
+        /* Main background and text */
+        body, .stApp {
+            background-color: #0E1117;
+            color: white;
+        }
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: #0E1117;
+            color: white;
+        }
+        /* Top Toolbar */
+        header[data-testid="stHeader"] {
+            background-color: #0E1117;
+        }
+        /* All texts */
+        h1, h2, h3, h4, h5, h6, p, label, span, div {
+            color: white !important;
+        }
+        /* Inputs (selectbox, multiselect, slider, etc.) */
+        .stSelectbox, .stMultiSelect, .stSlider, .stTextInput, .stNumberInput, .stTextArea {
+            background-color: #262730;
+            color: white;
+        }
+        /* Dropdown options background */
+        div[data-baseweb="select"] {
+            background-color: #262730 !important;
+        }
+        /* Buttons */
+        button {
+            background-color: #262730;
+            color: white;
+            border: 1px solid white;
+        }
+        </style>
+        """, unsafe_allow_html=True
+    )
+else:
+    st.markdown(
+        """
+        <style>
+        /* Main background and text */
+        body, .stApp {
+            background-color: white;
+            color: black;
+        }
+        /* Sidebar */
+        section[data-testid="stSidebar"] {
+            background-color: white;
+            color: black;
+        }
+        /* Top Toolbar */
+        header[data-testid="stHeader"] {
+            background-color: white;
+        }
+        /* All texts */
+        h1, h2, h3, h4, h5, h6, p, label, span, div {
+            color: black !important;
+        }
+        /* Inputs (selectbox, multiselect, slider, etc.) */
+        .stSelectbox, .stMultiSelect, .stSlider, .stTextInput, .stNumberInput, .stTextArea {
+            background-color: #F0F2F6;
+            color: black;
+        }
+        /* Dropdown options background */
+        div[data-baseweb="select"] {
+            background-color: white !important;
+        }
+        /* Buttons */
+        button {
+            background-color: #F0F2F6;
+            color: black;
+            border: 1px solid black;
+        }
+        </style>
+        """, unsafe_allow_html=True
+    )
+
+
+# --- Main Page ---
 st.title("📊 Sri Lanka Poverty Indicators Dashboard")
 st.markdown("Explore poverty trends, income inequality, and gaps over time for Sri Lanka.")
 
 # --- Filter Section ---
 with st.container():
-    st.header("🔎 Filter Options")
+    st.header("🔎 Filter Options (Main Dashboard)")
 
-    col1, col2 = st.columns([1,2])
+    income_options = df['Indicator Name'].dropna().unique()
+    default_indicator = "Income share held by lowest 20%"
 
-    with col1:
-        min_year = int(df['Year'].min())
-        max_year = int(df['Year'].max())
-        year_range = st.slider(
-            "Select Year Range:",
-            min_value=min_year,
-            max_value=max_year,
-            value=(min_year, max_year)
-        )
+    if default_indicator in income_options:
+        default_selection = [default_indicator]
+    else:
+        default_selection = [income_options[0]]
 
-    with col2:
-        income_options = df['Indicator Name'].dropna().unique()
-        default_indicator = "Income share held by lowest 20%"
+    income_share_choice = st.multiselect(
+        "Select KPI Indicator(s):",
+        options=income_options,
+        default=default_selection
+    )
 
-        if default_indicator in income_options:
-            default_selection = [default_indicator]
-        else:
-            default_selection = [income_options[0]]
-
-        income_share_choice = st.multiselect(
-            "Select KPI Indicator(s):",
-            options=income_options,
-            default=default_selection
-        )
-
-    # Reset button
-    if st.button("🔄 Reset Filters"):
-        year_range = (min_year, max_year)
+    if st.button("🔄 Reset Indicators"):
         income_share_choice = default_selection
+        st.experimental_rerun()
 
 # --- Filtered Data ---
 filtered_df = df[
@@ -80,17 +157,14 @@ filtered_df = df[
 
 # --- KPI Section ---
 st.subheader("📌 Key Metrics")
-
 latest_year = df['Year'].max()
-
 col1, col2, col3 = st.columns(3)
 
-# First KPI - selected income indicators
 with col1:
     if income_share_choice:
         for indicator in income_share_choice:
             latest_data = df[
-                (df['Year'] == latest_year) &
+                (df['Year'] == latest_year) & 
                 (df['Indicator Name'] == indicator)
             ]
             if not latest_data.empty:
@@ -104,9 +178,11 @@ with col1:
     else:
         st.metric(label="No Indicator Selected", value="N/A")
 
-# Second KPI - poverty headcount
 with col2:
-    poverty_headcount = df[(df['Year'] == latest_year) & (df['Indicator Name'].str.contains('poverty headcount', case=False))]
+    poverty_headcount = df[
+        (df['Year'] == latest_year) & 
+        (df['Indicator Name'].str.contains('poverty headcount', case=False))
+    ]
     if not poverty_headcount.empty:
         headcount_value = poverty_headcount['Value'].mean()
         st.metric(
@@ -116,9 +192,11 @@ with col2:
     else:
         st.metric(label="Poverty Headcount", value="N/A")
 
-# Third KPI - gini index
 with col3:
-    gini_index = df[(df['Year'] == latest_year) & (df['Indicator Name'].str.contains('gini', case=False))]
+    gini_index = df[
+        (df['Year'] == latest_year) & 
+        (df['Indicator Name'].str.contains('gini', case=False))
+    ]
     if not gini_index.empty:
         gini_value = gini_index['Value'].mean()
         st.metric(
@@ -187,21 +265,25 @@ with tab3:
         st.warning("No ranking data available.")
 
 with tab4:
-    st.subheader("Correlation Analysis")
-    pivot_df = df.pivot(index="Year", columns="Indicator Name", values="Value")
+    st.subheader("Correlation Matrix")
+    numeric_df = df.select_dtypes(include=['float64', 'int64'])
+    corr = numeric_df.corr()
 
-    if pivot_df.isnull().sum().sum() < 0.5 * pivot_df.size:
-        corr_matrix = pivot_df.corr()
-
-        fig_corr = px.imshow(
-            corr_matrix,
-            text_auto=True,
-            color_continuous_scale="Tealrose",
-            title="Correlation Between Indicators"
-        )
-        st.plotly_chart(fig_corr, use_container_width=True)
-    else:
-        st.info("Not enough data to compute correlation.")
+    fig, ax = plt.subplots(figsize=(6, 4))
+    sns.heatmap(
+        corr,
+        annot=True,
+        fmt=".2f",
+        cmap="coolwarm",
+        square=True,
+        linewidths=0.5,
+        cbar_kws={"shrink": 0.7},
+        annot_kws={"size": 8}
+    )
+    plt.xticks(rotation=45, ha='right', fontsize=8)
+    plt.yticks(fontsize=8)
+    plt.title('Correlation Matrix', fontsize=12)
+    st.pyplot(fig)
 
 # --- Footer ---
 st.markdown("---")
@@ -209,4 +291,3 @@ st.markdown(
     "<center>Developed by <b>Razaqa Aliskar</b> | Module: 5DATA004W | 📅 2025</center>",
     unsafe_allow_html=True
 )
-
