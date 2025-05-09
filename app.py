@@ -22,9 +22,6 @@ with st.sidebar:
     st.image('https://www.shutterstock.com/image-vector/vector-obverse-high-polygonal-pixel-600nw-2456917051.jpg', width=200)
     st.title("🌏 Dashboard Settings")
 
-    # Theme Toggle
-    theme = st.radio("Select Theme:", ['Light', 'Dark'], horizontal=True)
-
     st.markdown("---")
 
     # Year Filter ONLY
@@ -38,88 +35,6 @@ with st.sidebar:
         value=(min_year, max_year)
     )
 
-# --- Update Theme ---
-# --- Update Theme ---
-if theme == "Dark":
-    st.markdown(
-        """
-        <style>
-        /* Main background and text */
-        body, .stApp {
-            background-color: #0E1117;
-            color: white;
-        }
-        /* Sidebar */
-        section[data-testid="stSidebar"] {
-            background-color: #0E1117;
-            color: white;
-        }
-        /* Top Toolbar */
-        header[data-testid="stHeader"] {
-            background-color: #0E1117;
-        }
-        /* All texts */
-        h1, h2, h3, h4, h5, h6, p, label, span, div {
-            color: white !important;
-        }
-        /* Inputs (selectbox, multiselect, slider, etc.) */
-        .stSelectbox, .stMultiSelect, .stSlider, .stTextInput, .stNumberInput, .stTextArea {
-            background-color: #262730;
-            color: white;
-        }
-        /* Dropdown options background */
-        div[data-baseweb="select"] {
-            background-color: #262730 !important;
-        }
-        /* Buttons */
-        button {
-            background-color: #262730;
-            color: white;
-            border: 1px solid white;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
-else:
-    st.markdown(
-        """
-        <style>
-        /* Main background and text */
-        body, .stApp {
-            background-color: white;
-            color: black;
-        }
-        /* Sidebar */
-        section[data-testid="stSidebar"] {
-            background-color: white;
-            color: black;
-        }
-        /* Top Toolbar */
-        header[data-testid="stHeader"] {
-            background-color: white;
-        }
-        /* All texts */
-        h1, h2, h3, h4, h5, h6, p, label, span, div {
-            color: black !important;
-        }
-        /* Inputs (selectbox, multiselect, slider, etc.) */
-        .stSelectbox, .stMultiSelect, .stSlider, .stTextInput, .stNumberInput, .stTextArea {
-            background-color: #F0F2F6;
-            color: black;
-        }
-        /* Dropdown options background */
-        div[data-baseweb="select"] {
-            background-color: white !important;
-        }
-        /* Buttons */
-        button {
-            background-color: #F0F2F6;
-            color: black;
-            border: 1px solid black;
-        }
-        </style>
-        """, unsafe_allow_html=True
-    )
 
 
 # --- Main Page ---
@@ -146,7 +61,7 @@ with st.container():
 
     if st.button("🔄 Reset Indicators"):
         income_share_choice = default_selection
-        st.experimental_rerun()
+        st.rerun()
 
 # --- Filtered Data ---
 filtered_df = df[
@@ -207,7 +122,7 @@ with col3:
         st.metric(label="Gini Index", value="N/A")
 
 # --- Tabs for Charts ---
-tab1, tab2, tab3, tab4 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "🔗 Correlation"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"])
 
 with tab1:
     st.subheader("Trend of Selected Indicators")
@@ -252,38 +167,98 @@ with tab3:
 
     if not rank_df.empty:
         fig_rank = px.bar(
-            rank_df.sort_values('Value', ascending=False),
+            rank_df.sort_values('Value', ascending=True),
             x="Value",
             y="Indicator Name",
             orientation='h',
             title=f"Indicator Ranking ({latest_year})",
             color="Value",
-            color_continuous_scale="Viridis"
+            color_continuous_scale="Viridis",
+            hover_data=["Indicator Name", "Value"]
+        )
+        fig_rank.update_layout(
+            yaxis={'categoryorder':'total ascending'},
+            xaxis_title="Value",
+            yaxis_title="Indicator",
+            plot_bgcolor='rgba(0,0,0,0)'
         )
         st.plotly_chart(fig_rank, use_container_width=True)
     else:
         st.warning("No ranking data available.")
 
 with tab4:
-    st.subheader("Correlation Matrix")
-    numeric_df = df.select_dtypes(include=['float64', 'int64'])
-    corr = numeric_df.corr()
+    st.subheader("🧩 Poverty Headcount Trend ")
 
-    fig, ax = plt.subplots(figsize=(6, 4))
-    sns.heatmap(
-        corr,
-        annot=True,
-        fmt=".2f",
-        cmap="coolwarm",
-        square=True,
-        linewidths=0.5,
-        cbar_kws={"shrink": 0.7},
-        annot_kws={"size": 8}
+    # Filter headcount indicators directly (NOT relying on main multiselect)
+    headcount_df = df[
+        (df['Indicator Name'].str.contains('poverty headcount', case=False)) &
+        (df['Year'] >= year_range[0]) &
+        (df['Year'] <= year_range[1])
+    ]
+
+    # Let user pick which headcount indicators to show (new multiselect)
+    headcount_options = headcount_df['Indicator Name'].unique()
+
+    selected_headcount = st.multiselect(
+        "Select Poverty Headcount Indicator(s):",
+        options=headcount_options,
+        default=headcount_options.tolist()
     )
-    plt.xticks(rotation=45, ha='right', fontsize=8)
-    plt.yticks(fontsize=8)
-    plt.title('Correlation Matrix', fontsize=12)
-    st.pyplot(fig)
+
+    headcount_filtered_df = headcount_df[
+        headcount_df['Indicator Name'].isin(selected_headcount)
+    ]
+
+    if not headcount_filtered_df.empty:
+        fig_headcount = px.line(
+            headcount_filtered_df,
+            x="Year",
+            y="Value",
+            color="Indicator Name",
+            markers=True,
+            title="Poverty Headcount Trend (User Selected)",
+            color_discrete_sequence=px.colors.qualitative.Dark24
+        )
+        st.plotly_chart(fig_headcount, use_container_width=True)
+    else:
+        st.info("⚠️ No headcount data available for your selection.")
+
+
+
+with tab5:
+    st.subheader("Correlation Matrix (Interactive)")
+
+    # Prepare Pivot Table for Selected Data
+    corr_filtered_df = df[
+        (df['Year'] >= year_range[0]) &
+        (df['Year'] <= year_range[1]) &
+        (df['Indicator Name'].isin(income_share_choice))
+    ]
+
+    pivot_corr = corr_filtered_df.pivot_table(
+        values='Value', index='Year', columns='Indicator Name'
+    )
+
+    corr_matrix = pivot_corr.corr()
+
+    if not corr_matrix.empty:
+        fig_corr = px.imshow(
+            corr_matrix,
+            text_auto=True,
+            aspect="auto",
+            color_continuous_scale="RdBu_r",
+            title="Correlation Matrix Between Selected Indicators"
+        )
+        fig_corr.update_layout(
+            width=800,
+            height=600,
+            margin=dict(l=40, r=40, t=80, b=40)
+        )
+        st.plotly_chart(fig_corr, use_container_width=True)
+    else:
+        st.info("Not enough data to generate correlation matrix.")
+
+    
 
 # --- Footer ---
 st.markdown("---")
