@@ -43,7 +43,7 @@ st.markdown("Explore poverty trends, income inequality, and gaps over time for S
 
 # --- Filter Section ---
 with st.container():
-    st.header("🔎 Filter Options (Main Dashboard)")
+    st.header("🔎 Filter Options ")
 
     income_options = df['Indicator Name'].dropna().unique()
     default_indicator = "Income share held by lowest 20%"
