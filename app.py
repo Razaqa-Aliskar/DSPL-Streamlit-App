@@ -71,9 +71,6 @@ elif page == "Dashboard":
         default=default_selection
     )
 
-    if st.button("🔄 Reset Indicators"):
-        income_share_choice = default_selection
-        st.rerun()
 
     # --- Filtered Data ---
     filtered_df = df[
@@ -138,19 +135,27 @@ elif page == "Dashboard":
 
     with tab1:
         st.subheader("Trend of Selected Indicators")
-        if not filtered_df.empty:
-            fig_trend = px.line(
-                filtered_df,
-                x="Year",
-                y="Value",
-                color="Indicator Name",
-                markers=True,
-                title="Trend Analysis",
-                color_discrete_sequence=px.colors.qualitative.Set2
-            )
-            st.plotly_chart(fig_trend, use_container_width=True)
-        else:
-            st.warning("No Indicator Selected")
+
+    # Filter strictly for selected year range again
+    trend_df = filtered_df[
+        (filtered_df['Year'] >= year_range[0]) &
+        (filtered_df['Year'] <= year_range[1])
+    ]
+
+    if not trend_df.empty:
+        fig_trend = px.line(
+            trend_df,
+            x="Year",
+            y="Value",
+            color="Indicator Name",
+            markers=True,
+            title=f"Trend Analysis ({year_range[0]} - {year_range[1]})",
+            color_discrete_sequence=px.colors.qualitative.Set2
+        )
+        st.plotly_chart(fig_trend, use_container_width=True)
+    else:
+        st.warning("No Indicator Selected within the selected year range.")
+
 
     with tab2:
         st.subheader("Year-on-Year Growth")
