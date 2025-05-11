@@ -9,7 +9,7 @@ st.set_page_config(page_title="Sri Lanka Poverty Dashboard", layout="wide")
 # --- Load Data ---
 @st.cache_data
 def load_data():
-    time.sleep(1)
+    time.sleep(1)  # Simulate loading
     return pd.read_csv('poverty_lka_cleaned.csv')
 
 with st.spinner('Loading data...'):
@@ -17,7 +17,10 @@ with st.spinner('Loading data...'):
 
 # --- Sidebar ---
 with st.sidebar:
-    st.image('https://www.leftovercurrency.com/app/uploads/2018/10/1000-sri-lankan-rupees-banknote-sri-lanka-dancers-series-obverse-2.jpg', width=200)
+    st.image(
+        'https://www.leftovercurrency.com/app/uploads/2018/10/1000-sri-lankan-rupees-banknote-sri-lanka-dancers-series-obverse-2.jpg',
+        width=200
+    )
     st.title("🌏 Navigation")
     page = st.radio("Go to", ["Home", "Dashboard"])
 
@@ -41,12 +44,12 @@ if page == "Home":
     """)
     st.markdown("---")
 
-# --- Dashboard Page (KPIs + Visuals) ---
+# --- Dashboard Page ---
 elif page == "Dashboard":
     st.title("📊 Sri Lanka Poverty Indicators Dashboard")
     st.markdown("Explore poverty trends, income inequality, and gaps over time for Sri Lanka.")
 
-    # --- Sidebar Filters ---
+    # --- Filters ---
     min_year = int(df['Year'].min())
     max_year = int(df['Year'].max())
 
@@ -60,26 +63,20 @@ elif page == "Dashboard":
     income_options = df['Indicator Name'].dropna().unique()
     default_indicator = "Income share held by lowest 20%"
 
-    if default_indicator in income_options:
-        default_selection = [default_indicator]
-    else:
-        default_selection = [income_options[0]]
-
     income_share_choice = st.multiselect(
         "Select KPI Indicator(s):",
         options=income_options,
-        default=default_selection
+        default=[default_indicator] if default_indicator in income_options else [income_options[0]]
     )
 
-
-    # --- Filtered Data ---
+    # --- Filter Data ---
     filtered_df = df[
-        (df['Year'] >= year_range[0]) & 
-        (df['Year'] <= year_range[1]) & 
+        (df['Year'] >= year_range[0]) &
+        (df['Year'] <= year_range[1]) &
         (df['Indicator Name'].isin(income_share_choice))
     ]
 
-    # --- KPI Section ---
+    # --- KPIs ---
     st.subheader("📌 Key Metrics")
     latest_year = df['Year'].max()
     col1, col2, col3 = st.columns(3)
@@ -88,78 +85,66 @@ elif page == "Dashboard":
         if income_share_choice:
             for indicator in income_share_choice:
                 latest_data = df[
-                    (df['Year'] == latest_year) & 
+                    (df['Year'] == latest_year) &
                     (df['Indicator Name'] == indicator)
                 ]
                 if not latest_data.empty:
                     indicator_value = latest_data['Value'].mean()
-                    st.metric(
-                        label=f"{indicator} ({latest_year})",
-                        value=f"{indicator_value:.2f}%"
-                    )
+                    st.metric(f"{indicator} ({latest_year})", f"{indicator_value:.2f}%")
                 else:
-                    st.metric(label=f"{indicator} ({latest_year})", value="N/A")
+                    st.metric(f"{indicator} ({latest_year})", "N/A")
         else:
-            st.metric(label="No Indicator Selected", value="N/A")
+            st.metric("No Indicator Selected", "N/A")
 
     with col2:
         poverty_headcount = df[
-            (df['Year'] == latest_year) & 
+            (df['Year'] == latest_year) &
             (df['Indicator Name'].str.contains('poverty headcount', case=False))
         ]
         if not poverty_headcount.empty:
             headcount_value = poverty_headcount['Value'].mean()
-            st.metric(
-                label="Poverty Headcount (%)",
-                value=f"{headcount_value:.2f}%"
-            )
+            st.metric("Poverty Headcount (%)", f"{headcount_value:.2f}%")
         else:
-            st.metric(label="Poverty Headcount", value="N/A")
+            st.metric("Poverty Headcount", "N/A")
 
     with col3:
         gini_index = df[
-            (df['Year'] == latest_year) & 
+            (df['Year'] == latest_year) &
             (df['Indicator Name'].str.contains('gini', case=False))
         ]
         if not gini_index.empty:
             gini_value = gini_index['Value'].mean()
-            st.metric(
-                label="Gini Index",
-                value=f"{gini_value:.2f}"
-            )
+            st.metric("Gini Index", f"{gini_value:.2f}")
         else:
-            st.metric(label="Gini Index", value="N/A")
+            st.metric("Gini Index", "N/A")
 
-    # --- Tabs for Visuals ---
-tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"])
+    st.markdown("---")
 
-# --- Tab 1: Trend ---
-with tab1:
-    st.subheader("Trend of Selected Indicators")
+    # --- Tabs ---
+    tab1, tab2, tab3, tab4, tab5 = st.tabs([
+        "📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"
+    ])
 
-    # --- Filter strictly for selected year range ---
-    trend_df = filtered_df[
-        (filtered_df['Year'] >= year_range[0]) &
-        (filtered_df['Year'] <= year_range[1])
-    ]
+    # --- Tab 1: Trend ---
+    with tab1:
+        st.subheader("📈 Trend of Selected Indicators")
+        if not filtered_df.empty:
+            fig_trend = px.line(
+                filtered_df,
+                x="Year",
+                y="Value",
+                color="Indicator Name",
+                markers=True,
+                title=f"Trend Analysis ({year_range[0]} - {year_range[1]})",
+                color_discrete_sequence=px.colors.qualitative.Set2
+            )
+            st.plotly_chart(fig_trend, use_container_width=True)
+        else:
+            st.warning("⚠️ No indicator selected within the selected year range.")
 
-    if not trend_df.empty:
-        fig_trend = px.line(
-            trend_df,
-            x="Year",
-            y="Value",
-            color="Indicator Name",
-            markers=True,
-            title=f"Trend Analysis ({year_range[0]} - {year_range[1]})",
-            color_discrete_sequence=px.colors.qualitative.Set2
-        )
-        st.plotly_chart(fig_trend, use_container_width=True)
-    else:
-        st.warning("No Indicator Selected within the selected year range.")
-
-
+    # --- Tab 2: Growth ---
     with tab2:
-        st.subheader("Year-on-Year Growth")
+        st.subheader("📊 Year-on-Year Growth")
         growth_df = filtered_df.copy()
         growth_df['Previous Value'] = growth_df.groupby('Indicator Name')['Value'].shift(1)
         growth_df['Growth Rate (%)'] = ((growth_df['Value'] - growth_df['Previous Value']) / growth_df['Previous Value']) * 100
@@ -177,13 +162,13 @@ with tab1:
             )
             st.plotly_chart(fig_growth, use_container_width=True)
         else:
-            st.info("Not enough data to calculate growth.")
+            st.info("⚠️ Not enough data to calculate growth.")
 
+    # --- Tab 3: Ranking ---
     with tab3:
         st.subheader("🏆 Indicator Ranking Over Selected Years")
-
         ranking_df = df[
-            (df['Year'] >= year_range[0]) & 
+            (df['Year'] >= year_range[0]) &
             (df['Year'] <= year_range[1])
         ]
 
@@ -207,11 +192,11 @@ with tab1:
             )
             st.plotly_chart(fig_rank, use_container_width=True)
         else:
-            st.warning("No ranking data available for the selected year.")
+            st.warning("⚠️ No ranking data available for the selected year.")
 
+    # --- Tab 4: Headcount Trend ---
     with tab4:
-        st.subheader("🧩 Poverty Headcount Trend ")
-
+        st.subheader("🧩 Poverty Headcount Trend")
         headcount_df = df[
             (df['Indicator Name'].str.contains('poverty headcount', case=False)) &
             (df['Year'] >= year_range[0]) &
@@ -237,16 +222,16 @@ with tab1:
                 y="Value",
                 color="Indicator Name",
                 markers=True,
-                title="Poverty Headcount Trend (User Selected)",
+                title="Poverty Headcount Trend",
                 color_discrete_sequence=px.colors.qualitative.Dark24
             )
             st.plotly_chart(fig_headcount, use_container_width=True)
         else:
             st.info("⚠️ No headcount data available for your selection.")
 
+    # --- Tab 5: Correlation ---
     with tab5:
-        st.subheader("Correlation Matrix (Interactive)")
-
+        st.subheader("🔗 Correlation Matrix")
         corr_filtered_df = df[
             (df['Year'] >= year_range[0]) &
             (df['Year'] <= year_range[1]) &
@@ -265,7 +250,7 @@ with tab1:
                 text_auto=True,
                 aspect="auto",
                 color_continuous_scale="RdBu_r",
-                title="Correlation Matrix Between Selected Indicators"
+                title="Correlation Between Indicators"
             )
             fig_corr.update_layout(
                 width=800,
@@ -274,11 +259,11 @@ with tab1:
             )
             st.plotly_chart(fig_corr, use_container_width=True)
         else:
-            st.info("Not enough data to generate correlation matrix.")
+            st.info("⚠️ Not enough data to generate correlation matrix.")
 
 # --- Footer ---
 st.markdown("---")
 st.markdown(
-    "<center>Developed by <b>Razaqa Aliskar</b> | Module: 5DATA004W | 📅 2025 | Source: <b>HDX</b> </center>",
+    "<center>Developed by <b>Razaqa Aliskar</b> | Module: 5DATA004W | 📅 2025 | Source: <b>HDX</b></center>",
     unsafe_allow_html=True
 )
