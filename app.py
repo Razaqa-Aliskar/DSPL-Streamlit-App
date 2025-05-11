@@ -131,12 +131,13 @@ elif page == "Dashboard":
             st.metric(label="Gini Index", value="N/A")
 
     # --- Tabs for Visuals ---
-    tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"])
+tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"])
 
-    with tab1:
-        st.subheader("Trend of Selected Indicators")
+# --- Tab 1: Trend ---
+with tab1:
+    st.subheader("Trend of Selected Indicators")
 
-    # Filter strictly for selected year range again
+    # --- Filter strictly for selected year range ---
     trend_df = filtered_df[
         (filtered_df['Year'] >= year_range[0]) &
         (filtered_df['Year'] <= year_range[1])
