@@ -2,8 +2,6 @@ import streamlit as st
 import pandas as pd
 import plotly.express as px
 import time
-import matplotlib.pyplot as plt
-import seaborn as sns
 
 # --- Page Setup ---
 st.set_page_config(page_title="Sri Lanka Poverty Dashboard", layout="wide")
@@ -19,17 +17,36 @@ with st.spinner('Loading data...'):
 
 # --- Sidebar ---
 with st.sidebar:
-    st.image('https://www.shutterstock.com/image-vector/vector-obverse-high-polygonal-pixel-600nw-2456917051.jpg', width=200)
-    st.title("🌏 Dashboard Settings")
+    st.image('https://www.leftovercurrency.com/app/uploads/2018/10/1000-sri-lankan-rupees-banknote-sri-lanka-dancers-series-obverse-2.jpg', width=200)
+    st.title("🌏 Navigation")
+    page = st.radio("Go to", ["Home", "Dashboard"])
 
+# --- Home Page ---
+if page == "Home":
+    st.title("🏠 Welcome to the Sri Lanka Poverty Dashboard")
     st.markdown("---")
+    st.subheader("📚 About Poverty in Sri Lanka")
+    st.write("""
+    Sri Lanka has made significant progress in reducing poverty over the past decades. 
+    However, economic challenges, inflation, and regional disparities continue to affect vulnerable populations.
     
-    # Page selection
-    page = st.radio("Select a page:", ["Home", "Dashboard"])
+    This dashboard helps to explore key indicators such as income distribution, poverty headcount ratios, 
+    and inequality metrics over time to better understand the situation and track improvements.
 
+    **Key Data Sources:**  
+    - Humanitarian Data Exchange (HDX)  
+    - National Statistics Office of Sri Lanka
+
+    **Developed by Razaqa Aliskar | Module: 5DATA004W | 2025**
+    """)
     st.markdown("---")
-    
-    # Year Filter
+
+# --- Dashboard Page (KPIs + Visuals) ---
+elif page == "Dashboard":
+    st.title("📊 Sri Lanka Poverty Indicators Dashboard")
+    st.markdown("Explore poverty trends, income inequality, and gaps over time for Sri Lanka.")
+
+    # --- Sidebar Filters ---
     min_year = int(df['Year'].min())
     max_year = int(df['Year'].max())
 
@@ -40,71 +57,23 @@ with st.sidebar:
         value=(min_year, max_year)
     )
 
-# --- HOME PAGE ---
-if page == "Home":
-    st.title("🌏 Welcome to the Sri Lanka Poverty Dashboard")
-    st.markdown("## Understanding Poverty in Sri Lanka")
-    st.markdown("""
-    Sri Lanka has made significant progress in reducing poverty over the last few decades. However, pockets of poverty and income inequality persist, particularly in rural areas and post-conflict regions.
-    
-    **Key Issues:**
-    - **Income Inequality**: The Gini coefficient indicates notable disparities between the wealthiest and poorest segments.
-    - **Rural Challenges**: Rural districts often face higher poverty rates compared to urban centers.
-    - **Post-Conflict Effects**: Northern and Eastern provinces are still recovering economically, affecting household incomes.
+    income_options = df['Indicator Name'].dropna().unique()
+    default_indicator = "Income share held by lowest 20%"
 
-    This dashboard provides an interactive way to explore poverty trends, income distribution, and social inequality indicators over time. Use the sidebar to navigate between pages and customize your view!
-    """)
+    if default_indicator in income_options:
+        default_selection = [default_indicator]
+    else:
+        default_selection = [income_options[0]]
 
-    st.markdown("---")
-    st.markdown("### 📌 Developed by **Razaqa Aliskar** | Module: 5DATA004W | 📅 2025 | Source: **HDX**")
+    income_share_choice = st.multiselect(
+        "Select KPI Indicator(s):",
+        options=income_options,
+        default=default_selection
+    )
 
-# --- DASHBOARD PAGE ---
-elif page == "Dashboard":
-    st.title("📊 Sri Lanka Poverty Indicators Dashboard")
-    st.markdown("Explore poverty trends, income inequality, and gaps over time for Sri Lanka.")
-    
-    # --- KPI Section ---
-    st.subheader("📌 Key Metrics")
-    latest_year = df['Year'].max()
-    col1, col2, col3 = st.columns(3)
-
-    with col1:
-        income_share_choice = "Income share held by lowest 20%"  # Default
-        latest_data = df[(df['Year'] == latest_year) & (df['Indicator Name'] == income_share_choice)]
-        if not latest_data.empty:
-            indicator_value = latest_data['Value'].mean()
-            st.metric(label=f"{income_share_choice} ({latest_year})", value=f"{indicator_value:.2f}%")
-        else:
-            st.metric(label=f"{income_share_choice} ({latest_year})", value="N/A")
-
-    with col2:
-        poverty_headcount = df[(df['Year'] == latest_year) & (df['Indicator Name'].str.contains('poverty headcount', case=False))]
-        if not poverty_headcount.empty:
-            headcount_value = poverty_headcount['Value'].mean()
-            st.metric(label="Poverty Headcount (%)", value=f"{headcount_value:.2f}%")
-        else:
-            st.metric(label="Poverty Headcount", value="N/A")
-
-    with col3:
-        gini_index = df[(df['Year'] == latest_year) & (df['Indicator Name'].str.contains('gini', case=False))]
-        if not gini_index.empty:
-            gini_value = gini_index['Value'].mean()
-            st.metric(label="Gini Index", value=f"{gini_value:.2f}")
-        else:
-            st.metric(label="Gini Index", value="N/A")
-    
-    st.markdown("---")
-
-    # --- Filter Section ---
-    with st.container():
-        st.header("🔎 Filter Options ")
-        income_options = df['Indicator Name'].dropna().unique()
-        default_indicator = "Income share held by lowest 20%"
-        income_share_choice = st.multiselect(
-            "Select KPI Indicator(s):",
-            options=income_options,
-            default=[default_indicator]
-        )
+    if st.button("🔄 Reset Indicators"):
+        income_share_choice = default_selection
+        st.rerun()
 
     # --- Filtered Data ---
     filtered_df = df[
@@ -112,6 +81,57 @@ elif page == "Dashboard":
         (df['Year'] <= year_range[1]) & 
         (df['Indicator Name'].isin(income_share_choice))
     ]
+
+    # --- KPI Section ---
+    st.subheader("📌 Key Metrics")
+    latest_year = df['Year'].max()
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        if income_share_choice:
+            for indicator in income_share_choice:
+                latest_data = df[
+                    (df['Year'] == latest_year) & 
+                    (df['Indicator Name'] == indicator)
+                ]
+                if not latest_data.empty:
+                    indicator_value = latest_data['Value'].mean()
+                    st.metric(
+                        label=f"{indicator} ({latest_year})",
+                        value=f"{indicator_value:.2f}%"
+                    )
+                else:
+                    st.metric(label=f"{indicator} ({latest_year})", value="N/A")
+        else:
+            st.metric(label="No Indicator Selected", value="N/A")
+
+    with col2:
+        poverty_headcount = df[
+            (df['Year'] == latest_year) & 
+            (df['Indicator Name'].str.contains('poverty headcount', case=False))
+        ]
+        if not poverty_headcount.empty:
+            headcount_value = poverty_headcount['Value'].mean()
+            st.metric(
+                label="Poverty Headcount (%)",
+                value=f"{headcount_value:.2f}%"
+            )
+        else:
+            st.metric(label="Poverty Headcount", value="N/A")
+
+    with col3:
+        gini_index = df[
+            (df['Year'] == latest_year) & 
+            (df['Indicator Name'].str.contains('gini', case=False))
+        ]
+        if not gini_index.empty:
+            gini_value = gini_index['Value'].mean()
+            st.metric(
+                label="Gini Index",
+                value=f"{gini_value:.2f}"
+            )
+        else:
+            st.metric(label="Gini Index", value="N/A")
 
     # --- Tabs for Visuals ---
     tab1, tab2, tab3, tab4, tab5 = st.tabs(["📈 Trend", "📊 Growth", "🏆 Ranking", "📈 Headcount Trend", "🔗 Correlation"])
@@ -125,11 +145,12 @@ elif page == "Dashboard":
                 y="Value",
                 color="Indicator Name",
                 markers=True,
-                title="Trend Analysis"
+                title="Trend Analysis",
+                color_discrete_sequence=px.colors.qualitative.Set2
             )
             st.plotly_chart(fig_trend, use_container_width=True)
         else:
-            st.warning("No data for the selected filters.")
+            st.warning("No Indicator Selected")
 
     with tab2:
         st.subheader("Year-on-Year Growth")
@@ -145,7 +166,8 @@ elif page == "Dashboard":
                 y="Growth Rate (%)",
                 color="Indicator Name",
                 barmode="group",
-                title="Yearly Growth/Decline"
+                title="Yearly Growth/Decline",
+                color_discrete_sequence=px.colors.qualitative.Pastel
             )
             st.plotly_chart(fig_growth, use_container_width=True)
         else:
@@ -182,7 +204,7 @@ elif page == "Dashboard":
             st.warning("No ranking data available for the selected year.")
 
     with tab4:
-        st.subheader("🧩 Poverty Headcount Trend")
+        st.subheader("🧩 Poverty Headcount Trend ")
 
         headcount_df = df[
             (df['Indicator Name'].str.contains('poverty headcount', case=False)) &
@@ -209,14 +231,15 @@ elif page == "Dashboard":
                 y="Value",
                 color="Indicator Name",
                 markers=True,
-                title="Poverty Headcount Trend"
+                title="Poverty Headcount Trend (User Selected)",
+                color_discrete_sequence=px.colors.qualitative.Dark24
             )
             st.plotly_chart(fig_headcount, use_container_width=True)
         else:
             st.info("⚠️ No headcount data available for your selection.")
 
     with tab5:
-        st.subheader("🔗 Correlation Matrix (Interactive)")
+        st.subheader("Correlation Matrix (Interactive)")
 
         corr_filtered_df = df[
             (df['Year'] >= year_range[0]) &
@@ -238,11 +261,18 @@ elif page == "Dashboard":
                 color_continuous_scale="RdBu_r",
                 title="Correlation Matrix Between Selected Indicators"
             )
-            fig_corr.update_layout(width=800, height=600, margin=dict(l=40, r=40, t=80, b=40))
+            fig_corr.update_layout(
+                width=800,
+                height=600,
+                margin=dict(l=40, r=40, t=80, b=40)
+            )
             st.plotly_chart(fig_corr, use_container_width=True)
         else:
             st.info("Not enough data to generate correlation matrix.")
 
 # --- Footer ---
 st.markdown("---")
-st.markdown("<center>Developed by <b>Razaqa Aliskar</b> | Module: 5DATA004W | 📅 2025 | Source: <b>HDX</b> </center>", unsafe_allow_html=True)
+st.markdown(
+    "<center>Developed by <b>Razaqa Aliskar</b> | Module: 5DATA004W | 📅 2025 | Source: <b>HDX</b> </center>",
+    unsafe_allow_html=True
+)
